@@ -21,5 +21,6 @@ from .views import healthcheck_view
 urlpatterns = [
     path("healthcheck/", healthcheck_view),
     path('admin/', admin.site.urls),
-    path('api-auth/', include('rest_framework.urls'))
+    path('api-auth/', include('rest_framework.urls')),
+    path('pokemon/', include('pokemons.urls'))
 ]

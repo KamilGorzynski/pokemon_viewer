@@ -14,4 +14,6 @@ RUN pip install flower
 
 COPY . .
 
+RUN chmod +x /usr/src/docker-entrypoint.sh
+
 CMD gunicorn pokemon_viewer_backend.wsgi -k gevent -w 4 --worker-connections 1000 --bind 0.0.0.0:80
