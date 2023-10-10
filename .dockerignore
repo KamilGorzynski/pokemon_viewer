@@ -1,0 +1,16 @@
+# Virtual environment
+.env
+.venv/
+venv/
+
+# Git
+.git
+.gitignore
+
+
+# Docker
+docker-compose.yml
+Dockerfile
+.docker
+
+.idea

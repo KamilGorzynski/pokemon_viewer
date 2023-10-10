@@ -7,6 +7,8 @@ services:
     - "8000:8000"
     build:
       context: .
+    stdin_open: true
+    tty: true
     volumes:
       -  '.:/src'
     environment:
