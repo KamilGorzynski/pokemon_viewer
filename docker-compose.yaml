@@ -1,0 +1,57 @@
+version: '3.7'
+
+services:
+  app:
+    restart: always
+    ports:
+    - "8000:8000"
+    build:
+      context: .
+    volumes:
+      -  '.:/src'
+    environment:
+      - DB_HOST=postgres
+      - DB_NAME=pokemon_db
+      - DB_USER=postgres
+      - DB_PASS=postgres
+    command: ["./manage.py", "runserver", "0.0.0.0:8000"]
+  postgres:
+    image: postgres:13.2
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - pokemon_viewer_db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=pokemon_db
+  redis:
+    image: redis
+    restart: always
+    expose:
+      - 6379
+    volumes:
+      - pokemon_viewer_redis_data:/data
+  celery:
+    restart: always
+    build:
+      context: .
+    command: ["celery", "-A", "pokemon_viewer_backend", "worker", "-l", "info", "--beat"]
+    environment:
+      - BROKER_URL=redis://redis:6379
+      - RESULT_BACKEND=redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+      - app
+  flower:
+    image: mher/flower:0.9.7
+    command: [ 'flower', '--broker=redis://redis:6379', '--port=5555' ]
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+volumes:
+    pokemon_viewer_db_data:
+    pokemon_viewer_redis_data:
