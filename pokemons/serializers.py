@@ -24,7 +24,7 @@ class PokemonSerializer(serializers.ModelSerializer):
             "defence",
             "sp_attack",
             "sp_defence",
-            "speeed",
+            "speed",
             "generation",
             "legendary",
         )
