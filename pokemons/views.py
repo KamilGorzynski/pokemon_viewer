@@ -1,5 +1,9 @@
 import pandas as pd
+import plotly.colors as colors
+from plotly.offline import plot
+from plotly.graph_objs import Bar, Figure
 from django.db import connection
+from django.shortcuts import render
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import permissions
 from rest_framework import generics
@@ -15,10 +19,26 @@ class StrongestPokemonsList(generics.ListAPIView):
     queryset = Pokemon.objects.all()
 
     def list(self, request):
-        query = str(self.get_queryset().query)
-        df = pd.read_sql_query(query, connection)
-        result = df.groupby("type_1_id").agg({"name": "idxmax", "attack": "max"})
-        return Response(result)
+        df = (
+            pd.read_sql_query(str(self.get_queryset().query), connection)
+            .replace({"type_1_id": {obj.id: obj.name for obj in PokemonType.objects.all()}})
+        )
+        max_attack_indices = df.groupby("type_1_id")["attack"].idxmax()
+        result = df.loc[max_attack_indices, ["type_1_id", "name", "attack"]].reset_index(drop=True)
+
+        fig = Figure(layout={
+            "title": 'Strongest pokemons by type',
+            "xaxis_title": 'Type',
+            "yaxis_title": 'Attack value',
+        })
+        fig.add_trace(Bar(
+            x=result["type_1_id"].to_list(),
+            y=result["attack"].to_list(),
+            marker_color=colors.DEFAULT_PLOTLY_COLORS,
+            text=result["name"].to_list()
+        ))
+        plot_div = plot(fig, output_type='div')
+        return render(request, "plotly_main.html", context={'plot_div': plot_div})
 
 
 class SamplePokemonsList(generics.ListAPIView):
