@@ -11,11 +11,8 @@ services:
     tty: true
     volumes:
       -  '.:/src'
-    environment:
-      - DB_HOST=postgres
-      - DB_NAME=pokemon_db
-      - DB_USER=postgres
-      - DB_PASS=postgres
+    env_file:
+      - .env.local
     command: ["./docker-entrypoint.sh"]
   postgres:
     image: postgres:13.2
@@ -24,10 +21,8 @@ services:
       - "5432:5432"
     volumes:
       - pokemon_viewer_db_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=pokemon_db
+    env_file:
+      - .env.local
   redis:
     image: redis
     restart: always
@@ -40,12 +35,8 @@ services:
     build:
       context: .
     command: ["celery", "-A", "pokemon_viewer_backend", "worker", "-l", "info", "--beat"]
-    environment:
-      - BROKER_URL=redis://redis:6379
-      - RESULT_BACKEND=redis://redis:6379
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=pokemon_db
+    env_file:
+      - .env.local
     depends_on:
       - postgres
       - redis

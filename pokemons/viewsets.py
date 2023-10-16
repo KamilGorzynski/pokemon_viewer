@@ -4,8 +4,6 @@ from pokemons.serializers import PokemonLightSerializer
 
 
 class LightPokemonViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    This viewset automatically provides `list` and `retrieve` actions.
-    """
-    queryset = Pokemon.objects.all()
+
+    queryset = Pokemon.objects.only("name", "hp", "attack", "defence")
     serializer_class = PokemonLightSerializer
