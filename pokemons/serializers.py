@@ -4,14 +4,12 @@ from pokemons import const
 
 
 class PokemonLightSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Pokemon
         fields = ("name", "hp", "attack", "defence")
 
 
 class PokemonSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Pokemon
         fields = (

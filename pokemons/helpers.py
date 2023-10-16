@@ -14,7 +14,7 @@ def create_pokemons_types(pokemon_df):
         pokemon_types_list.append(pokemon_obj)
         pokemon_types_dict[type_name] = pokemon_obj
     with transaction.atomic():
-         PokemonType.objects.bulk_create(pokemon_types_list, ignore_conflicts=True)
+        PokemonType.objects.bulk_create(pokemon_types_list, ignore_conflicts=True)
     return pokemon_types_dict
 
 
@@ -25,9 +25,13 @@ def create_pokemons(pokemon_df):
     for _, pokemon in renamed_pokemon_df.iterrows():
         serializer = ImportPokemonSerializer(data=pokemon.to_dict())
         if serializer.is_valid(raise_exception=True):
-            pokemon_list.append(Pokemon(**{
-                **serializer.validated_data,
-                "type_1": pokemon_types_dict[pokemon["type_1"]],
-            }))
+            pokemon_list.append(
+                Pokemon(
+                    **{
+                        **serializer.validated_data,
+                        "type_1": pokemon_types_dict[pokemon["type_1"]],
+                    }
+                )
+            )
     with transaction.atomic():
-         Pokemon.objects.bulk_create(pokemon_list, ignore_conflicts=True)
+        Pokemon.objects.bulk_create(pokemon_list, ignore_conflicts=True)

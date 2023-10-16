@@ -6,36 +6,57 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='PokemonType',
+            name="PokemonType",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=100, unique=True)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("name", models.CharField(max_length=100, unique=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Pokemon',
+            name="Pokemon",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=100, unique=True)),
-                ('type_2', models.CharField(max_length=30)),
-                ('total', models.IntegerField()),
-                ('hp', models.IntegerField()),
-                ('attack', models.IntegerField()),
-                ('defence', models.IntegerField()),
-                ('sp_attack', models.IntegerField()),
-                ('sp_defence', models.IntegerField()),
-                ('speed', models.IntegerField()),
-                ('generation', models.IntegerField()),
-                ('legendary', models.BooleanField()),
-                ('type_1', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='pokemons.pokemontype')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("name", models.CharField(max_length=100, unique=True)),
+                ("type_2", models.CharField(max_length=30)),
+                ("total", models.IntegerField()),
+                ("hp", models.IntegerField()),
+                ("attack", models.IntegerField()),
+                ("defence", models.IntegerField()),
+                ("sp_attack", models.IntegerField()),
+                ("sp_defence", models.IntegerField()),
+                ("speed", models.IntegerField()),
+                ("generation", models.IntegerField()),
+                ("legendary", models.BooleanField()),
+                (
+                    "type_1",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="pokemons.pokemontype",
+                    ),
+                ),
             ],
         ),
     ]

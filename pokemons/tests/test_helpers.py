@@ -13,7 +13,7 @@ def csv_file():
         1,Bulbasaur,Grass,Poison,318,45,49,49,65,65,45,1,False
         2,Ivysaur,Grass,Poison,405,60,62,63,80,80,60,1,False
     """
-    return SimpleUploadedFile('pokemon.csv', file_content)
+    return SimpleUploadedFile("pokemon.csv", file_content)
 
 
 @pytest.mark.django_db
@@ -23,7 +23,10 @@ def test_create_pokemon_types(csv_file):
     pokemon_type_name = "Grass"
 
     assert pokemon_type_queryset.count() == 1
-    assert pokemon_type_queryset.values_list("name", flat=True).first() == pokemon_type_name
+    assert (
+        pokemon_type_queryset.values_list("name", flat=True).first()
+        == pokemon_type_name
+    )
     assert pokemon_types_dict == {pokemon_type_name: pokemon_type_queryset.first()}
 
 
