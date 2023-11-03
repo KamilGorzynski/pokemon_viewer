@@ -28,12 +28,14 @@ def no_extension_file():
 @pytest.mark.django_db
 def test_file_not_provided(client):
     response = client.post("/pokemons/import/", {}, format="multipart")
+    assert response.status_code == 400
     assert response.json() == {"error": "File not provided"}
 
 
 @pytest.mark.django_db
 def test_incorrect_extension(client, txt_file):
     response = client.post("/pokemons/import/", {"file": txt_file}, format="multipart")
+    assert response.status_code == 400
     assert response.json() == {"error": "Incorrect extension"}
 
 
@@ -42,7 +44,25 @@ def test_no_extension(client, no_extension_file):
     response = client.post(
         "/pokemons/import/", {"file": no_extension_file}, format="multipart"
     )
+    assert response.status_code == 400
     assert response.json() == {"error": "File has no extension"}
+
+
+@pytest.mark.django_db
+def test_wrong_method(client, no_extension_file):
+    response = client.get(
+        "/pokemons/import/", {"file": no_extension_file}, format="multipart"
+    )
+    assert response.status_code == 405
+
+
+@pytest.mark.django_db
+def test_wrong_format(client, no_extension_file):
+    response = client.post(
+        "/pokemons/import/", {"file": "no_extension_file"}, format="json"
+    )
+    assert response.json() == {"error": "File not provided"}
+    assert response.status_code == 400
 
 
 @pytest.mark.django_db
