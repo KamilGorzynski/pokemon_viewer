@@ -108,6 +108,16 @@ DATABASES = {
     }
 }
 
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://redis",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    }
+}
+
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://redis")
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 CELERY_RESULT_SERIALIZER = "pickle"

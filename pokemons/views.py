@@ -1,9 +1,7 @@
 import pandas as pd
-import plotly.colors as colors
-from plotly.offline import plot
-from plotly.graph_objs import Bar, Figure
 from django.db import connection
 from django.shortcuts import render
+from django.views.decorators.cache import cache_page
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import permissions
 from rest_framework import generics
@@ -13,38 +11,7 @@ from pokemons.utils import get_extension
 from pokemons.const import EXTENSIONS, FILE_COLUMNS
 from pokemons.tasks import create_pokemons_task
 from pokemons.models import Pokemon, PokemonType
-
-
-class StrongestPokemonsList(generics.ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    queryset = Pokemon.objects.all()
-
-    def list(self, request):
-        df = pd.read_sql_query(str(self.get_queryset().query), connection).replace(
-            {"type_1_id": {obj.id: obj.name for obj in PokemonType.objects.all()}}
-        )
-        max_attack_indices = df.groupby("type_1_id")["attack"].idxmax()
-        result = df.loc[
-            max_attack_indices, ["type_1_id", "name", "attack"]
-        ].reset_index(drop=True)
-
-        fig = Figure(
-            layout={
-                "title": "Strongest pokemons by type",
-                "xaxis_title": "Type",
-                "yaxis_title": "Attack value",
-            }
-        )
-        fig.add_trace(
-            Bar(
-                x=result["type_1_id"].to_list(),
-                y=result["attack"].to_list(),
-                marker_color=colors.DEFAULT_PLOTLY_COLORS,
-                text=result["name"].to_list(),
-            )
-        )
-        plot_div = plot(fig, output_type="div")
-        return render(request, "plotly_main.html", context={"plot_div": plot_div})
+from pokemons.plotly import get_strongest_pokemons_chart_div
 
 
 class SamplePokemonsList(generics.ListAPIView):
@@ -80,3 +47,23 @@ def import_pokemons(request):
     create_pokemons_task.delay(pd.read_csv(file, usecols=FILE_COLUMNS).to_dict())
 
     return Response({"message": "Loading objects in progress"})
+
+
+@api_view(["GET"])
+@permission_classes((permissions.AllowAny,))
+@cache_page(60 * 3)
+def strongest_pokemons(request):
+    df = pd.read_sql_query(str(Pokemon.objects.all().query), connection).replace(
+        {"type_1_id": {obj.id: obj.name for obj in PokemonType.objects.all()}}
+    )
+
+    max_attack_indices = df.groupby("type_1_id")["attack"].idxmax()
+    result = df.loc[max_attack_indices, ["type_1_id", "name", "attack"]].reset_index(
+        drop=True
+    )
+
+    return render(
+        request,
+        "plotly_main.html",
+        context={"plot_div": get_strongest_pokemons_chart_div(result)},
+    )
