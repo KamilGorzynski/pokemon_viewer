@@ -16,6 +16,7 @@ from pokemons.models import Pokemon, PokemonType
 
 
 class StrongestPokemonsList(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
     queryset = Pokemon.objects.all()
 
     def list(self, request):
@@ -47,7 +48,7 @@ class StrongestPokemonsList(generics.ListAPIView):
 
 
 class SamplePokemonsList(generics.ListAPIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     queryset = Pokemon.objects.all()
 
     def list(self, request):

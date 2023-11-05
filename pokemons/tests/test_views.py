@@ -1,16 +1,18 @@
 import pytest
 from unittest import mock
-from pokemons.tests.factories import PokemonFactory, PokemonTypeFactory
+from pokemons.tests import factories as pokemon_factories
+from users.tests import factories as user_factories
 
 
 @pytest.mark.django_db
 def test_sample(client):
-    type_1 = PokemonTypeFactory()
-    PokemonFactory(type_1=type_1)
-    PokemonFactory(type_1=type_1)
-    PokemonFactory(type_1=type_1)
+    access_token = user_factories.AccessTokenFactory()
+    type_1 = pokemon_factories.PokemonTypeFactory()
+    pokemon_factories.PokemonFactory(type_1=type_1)
+    pokemon_factories.PokemonFactory(type_1=type_1)
+    pokemon_factories.PokemonFactory(type_1=type_1)
 
-    response = client.get("/pokemons/sample/", {})
+    response = client.get("/pokemons/sample/", HTTP_AUTHORIZATION=f"Bearer {access_token}")
     assert response.status_code == 200
     assert response.json() == [
         {
@@ -63,12 +65,15 @@ def test_sample(client):
 
 @pytest.mark.django_db
 def test_sample_no_pokemons(client):
-    response = client.get("/pokemons/sample/", {})
+    access_token = user_factories.AccessTokenFactory()
+    response = client.get("/pokemons/sample/", HTTP_AUTHORIZATION=f"Bearer {access_token}")
     assert response.status_code == 200
     assert response.json() == []
 
 
 @pytest.mark.django_db
 def test_wrong_method(client):
-    response = client.post("/pokemons/sample/", {})
+    access_token = user_factories.AccessTokenFactory()
+    response = client.post("/pokemons/sample/", HTTP_AUTHORIZATION=f"Bearer {access_token}")
     assert response.status_code == 405
+
