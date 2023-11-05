@@ -12,7 +12,9 @@ def test_sample(client):
     pokemon_factories.PokemonFactory(type_1=type_1)
     pokemon_factories.PokemonFactory(type_1=type_1)
 
-    response = client.get("/pokemons/sample/", HTTP_AUTHORIZATION=f"Bearer {access_token}")
+    response = client.get(
+        "/pokemons/sample/", HTTP_AUTHORIZATION=f"Bearer {access_token}"
+    )
     assert response.status_code == 200
     assert response.json() == [
         {
@@ -66,7 +68,9 @@ def test_sample(client):
 @pytest.mark.django_db
 def test_sample_no_pokemons(client):
     access_token = user_factories.AccessTokenFactory()
-    response = client.get("/pokemons/sample/", HTTP_AUTHORIZATION=f"Bearer {access_token}")
+    response = client.get(
+        "/pokemons/sample/", HTTP_AUTHORIZATION=f"Bearer {access_token}"
+    )
     assert response.status_code == 200
     assert response.json() == []
 
@@ -74,6 +78,7 @@ def test_sample_no_pokemons(client):
 @pytest.mark.django_db
 def test_wrong_method(client):
     access_token = user_factories.AccessTokenFactory()
-    response = client.post("/pokemons/sample/", HTTP_AUTHORIZATION=f"Bearer {access_token}")
+    response = client.post(
+        "/pokemons/sample/", HTTP_AUTHORIZATION=f"Bearer {access_token}"
+    )
     assert response.status_code == 405
-

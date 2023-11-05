@@ -7,9 +7,9 @@ class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = User
 
-    username = factory.Faker('user_name')
-    email = factory.Faker('email')
-    password = factory.Faker('password')
+    username = factory.Faker("user_name")
+    email = factory.Faker("email")
+    password = factory.Faker("password")
 
 
 class AccessTokenFactory(factory.Factory):
@@ -20,6 +20,6 @@ class AccessTokenFactory(factory.Factory):
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
-        user = kwargs.get('user')
+        user = kwargs.get("user")
         access_token = AccessToken.for_user(user)
         return str(access_token)

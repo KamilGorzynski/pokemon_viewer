@@ -49,15 +49,16 @@ class StrongestPokemonsList(generics.ListAPIView):
 
 class SamplePokemonsList(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
-    queryset = Pokemon.objects.all()
+    # ? is translated 'ORDER BY RANDOM()' in SQL
+    queryset = Pokemon.objects.order_by("?")
 
     def list(self, request):
-        df = pd.read_sql_query(str(self.get_queryset().query), connection)
-        if df.empty:
-            return Response([])
+        sample_amount = int(request.query_params.get("amount", 3))
+        df = pd.read_sql_query(
+            str(self.get_queryset()[:sample_amount].query), connection
+        )
         return Response(
-            df.sample(int(request.query_params.get("amount", 3)))
-            .replace({"nan": None})
+            df.replace({"nan": None})
             .replace(
                 {"type_1_id": {obj.id: obj.name for obj in PokemonType.objects.all()}}
             )
