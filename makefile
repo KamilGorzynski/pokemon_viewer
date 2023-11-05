@@ -12,3 +12,6 @@ django_shell:
 
 test:
 	docker-compose exec -T app pytest
+
+coverage:
+	docker-compose exec -T app coverage report -m
